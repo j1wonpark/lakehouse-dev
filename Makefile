@@ -7,7 +7,7 @@ REPO_ROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 -include $(REPO_ROOT).env.local
 include $(REPO_ROOT).env.default
 
-export SPARK_HOME ICEBERG_HOME DEV_JARS_DIR SPARK_IMAGE SPARK_TAG KIND_CLUSTER
+export SPARK_HOME ICEBERG_HOME SPARK_IMAGE SPARK_TAG KIND_CLUSTER
 export KIND_EXPERIMENTAL_PROVIDER=podman
 export JAVA_HOME := $(shell /usr/libexec/java_home -v 17)
 
