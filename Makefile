@@ -21,7 +21,7 @@ help: ## Show this help
 		awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-22s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: all
-all: cluster infra spark-image spark-connect init-catalog ## Setup everything end-to-end
+all: cluster infra dev-build-iceberg spark-image spark-connect init-catalog ## Setup everything end-to-end
 
 .PHONY: infra
 infra: deploy-minio deploy-polaris deploy-spark-operator deploy-ingress ## Deploy all infrastructure (MinIO + Polaris + Spark Operator + Ingress)

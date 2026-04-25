@@ -13,10 +13,7 @@ IMAGE_TAG="${SPARK_TAG:-latest}"
 KIND_CLUSTER="${KIND_CLUSTER:-kind-cluster}"
 FULL_IMAGE="${IMAGE_NAME}:${IMAGE_TAG}"
 
-# Iceberg version to bundle
-ICEBERG_VERSION="${ICEBERG_VERSION:-1.10.1}"
 SCALA_VERSION="2.13"
-SPARK_ICEBERG_COMPAT="4.0"
 
 SKIP_BUILD=false
 SKIP_LOAD=false
@@ -49,28 +46,8 @@ else
   echo "==> Skipping Spark build (--skip-build)"
 fi
 
-# --- Step 2: Download Iceberg jars -------------------------------------------
+# --- Step 2: Check Iceberg jars (must be built via make dev-build-iceberg) ----
 echo ""
-echo "==> Downloading Iceberg jars..."
-
-EXTRA_JARS_DIR="${SPARK_HOME}/extra-jars"
-mkdir -p "${EXTRA_JARS_DIR}"
-
-MAVEN_CENTRAL="https://repo1.maven.org/maven2"
-ICEBERG_JAR="iceberg-spark-runtime-${SPARK_ICEBERG_COMPAT}_${SCALA_VERSION}-${ICEBERG_VERSION}.jar"
-ICEBERG_URL="${MAVEN_CENTRAL}/org/apache/iceberg/iceberg-spark-runtime-${SPARK_ICEBERG_COMPAT}_${SCALA_VERSION}/${ICEBERG_VERSION}/${ICEBERG_JAR}"
-
-if [ ! -f "${EXTRA_JARS_DIR}/${ICEBERG_JAR}" ]; then
-  echo "    Downloading ${ICEBERG_JAR}..."
-  curl -fSL -o "${EXTRA_JARS_DIR}/${ICEBERG_JAR}" "${ICEBERG_URL}"
-else
-  echo "    ${ICEBERG_JAR} already exists, skipping download."
-fi
-
-# --- Step 3: Copy extra jars into Spark jars directory -----------------------
-echo ""
-echo "==> Copying extra jars into Spark distribution..."
-
 SPARK_JARS_DIR="${SPARK_HOME}/assembly/target/scala-${SCALA_VERSION}/jars"
 if [ ! -d "${SPARK_JARS_DIR}" ]; then
   echo "ERROR: Spark jars not found at ${SPARK_JARS_DIR}"
@@ -78,11 +55,16 @@ if [ ! -d "${SPARK_JARS_DIR}" ]; then
   exit 1
 fi
 
-cp -v "${EXTRA_JARS_DIR}"/*.jar "${SPARK_JARS_DIR}/"
+ICEBERG_JAR_COUNT=$(find "${SPARK_JARS_DIR}" -name "iceberg-spark-runtime-*.jar" | wc -l | tr -d ' ')
+if [ "${ICEBERG_JAR_COUNT}" -eq 0 ]; then
+  echo "ERROR: Iceberg runtime jar not found in ${SPARK_JARS_DIR}"
+  echo "       Run: make dev-build-iceberg"
+  exit 1
+fi
+echo "==> Iceberg jars found (${ICEBERG_JAR_COUNT}):"
+find "${SPARK_JARS_DIR}" -name "iceberg-*.jar" -exec basename {} \;
 
-echo "==> Extra jars copied."
-
-# --- Step 4: Build container image with podman --------------------------------
+# --- Step 3: Build container image with podman --------------------------------
 echo ""
 echo "==> Building container image with podman..."
 
