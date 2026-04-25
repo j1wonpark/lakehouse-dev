@@ -1,0 +1,31 @@
+# MinIO - Standalone mode for local development
+# Helm chart: https://github.com/minio/minio/tree/master/helm/minio
+
+mode: standalone
+
+replicas: 1
+
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 100m
+  limits:
+    memory: 512Mi
+
+rootUser: minioadmin
+rootPassword: minioadmin
+
+persistence:
+  enabled: true
+  size: 10Gi
+
+buckets:
+  - name: warehouse
+    policy: none
+    purge: false
+
+consoleIngress:
+  enabled: false
+
+ingress:
+  enabled: false

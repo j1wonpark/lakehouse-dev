@@ -1,0 +1,9 @@
+# TCP passthrough for Spark Connect (gRPC port 15002)
+# ingress-nginx routes external :15002 → spark/spark-connect-server-svc:15002
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tcp-services
+  namespace: ingress-nginx
+data:
+  "15002": "spark/spark-connect-server-svc:15002"

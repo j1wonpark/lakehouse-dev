@@ -1,0 +1,17 @@
+# PostgreSQL for Polaris catalog persistence
+
+auth:
+  username: polaris
+  password: polaris
+  database: polaris
+
+primary:
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 50m
+    limits:
+      memory: 256Mi
+  persistence:
+    enabled: true
+    size: 1Gi

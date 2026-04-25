@@ -1,0 +1,24 @@
+# Apache Spark Kubernetes Operator
+# Helm chart: spark/spark-kubernetes-operator
+
+operatorDeployment:
+  replicas: 1
+  operatorPod:
+    operatorContainer:
+      resources:
+        requests:
+          cpu: 250m
+          memory: 512Mi
+        limits:
+          cpu: 500m
+          memory: 1Gi
+
+workloadResources:
+  namespaces:
+    create: true
+    overrideWatchedNamespaces: true
+    data:
+      - spark
+  serviceAccount:
+    create: true
+    name: spark

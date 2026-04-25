@@ -1,0 +1,37 @@
+# Apache Polaris (incubating) - Iceberg REST Catalog
+# Helm chart: https://downloads.apache.org/incubator/polaris/helm-chart
+
+replicaCount: 1
+
+persistence:
+  type: relational-jdbc
+  relationalJdbc:
+    secret:
+      name: polaris-persistence-secret
+      username: username
+      password: password
+      jdbcUrl: jdbcUrl
+
+extraEnv:
+  - name: AWS_REGION
+    value: "us-east-1"
+  - name: AWS_ACCESS_KEY_ID
+    value: "minioadmin"
+  - name: AWS_SECRET_ACCESS_KEY
+    value: "minioadmin"
+  - name: POLARIS_BOOTSTRAP_CREDENTIALS
+    value: "POLARIS,root,s3cr3t"
+  - name: "polaris.realm-context.realms"
+    value: "POLARIS"
+  - name: quarkus.otel.sdk.disabled
+    value: "true"
+
+advancedConfig:
+  polaris.features.ALLOW_SETTING_S3_ENDPOINTS: "true"
+
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 100m
+  limits:
+    memory: 512Mi

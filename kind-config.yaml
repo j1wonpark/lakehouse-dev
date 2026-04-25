@@ -1,0 +1,17 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      - containerPort: 80
+        hostPort: 80
+        protocol: TCP
+      - containerPort: 443
+        hostPort: 443
+        protocol: TCP
+      - containerPort: 15002
+        hostPort: 15002
+        protocol: TCP
+    extraMounts:
+      - hostPath: /Users/jiwonpark/Workspace/spark/assembly/target/scala-2.13/jars
+        containerPath: /opt/spark/jars
