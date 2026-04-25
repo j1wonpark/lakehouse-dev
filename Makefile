@@ -85,8 +85,6 @@ deploy-ingress: ## Deploy ingress-nginx + MinIO/Spark-Connect ingress resources
 		-p='[{"op":"add","path":"/spec/ports/-","value":{"name":"spark-connect","port":15002,"targetPort":15002,"protocol":"TCP"}}]'
 	kubectl wait --namespace ingress-nginx --for=condition=ready pod \
 		--selector=app.kubernetes.io/component=controller --timeout=120s
-	kubectl apply -f manifests/ingress-minio.yaml
-	kubectl apply -f manifests/ingress-polaris.yaml
 	kubectl apply -f manifests/ingress-spark-connect-tcp.yaml
 	kubectl apply -f manifests/ingress-spark-ui.yaml 2>/dev/null || true
 

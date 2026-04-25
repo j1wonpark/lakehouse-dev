@@ -29,6 +29,21 @@ extraEnv:
 advancedConfig:
   polaris.features.ALLOW_SETTING_S3_ENDPOINTS: "true"
 
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: polaris.localhost
+      paths:
+        - path: /
+          pathType: Prefix
+          port: 8181
+    - host: polaris-mgmt.localhost
+      paths:
+        - path: /
+          pathType: Prefix
+          port: 8182
+
 resources:
   requests:
     memory: 256Mi

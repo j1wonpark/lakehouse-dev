@@ -25,7 +25,17 @@ buckets:
     purge: false
 
 consoleIngress:
-  enabled: false
+  enabled: true
+  ingressClassName: nginx
+  hosts:
+    - minio.localhost
 
 ingress:
-  enabled: false
+  enabled: true
+  ingressClassName: nginx
+  hosts:
+    - minio-api.localhost
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
