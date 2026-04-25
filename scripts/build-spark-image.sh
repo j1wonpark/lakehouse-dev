@@ -99,5 +99,5 @@ fi
 
 echo ""
 echo "==> Done! Image '${FULL_IMAGE}' is ready in cluster '${KIND_CLUSTER}'."
-echo "==> Bundled extra jars:"
-ls -1 "${EXTRA_JARS_DIR}"
+echo "==> Bundled Iceberg jars:"
+find "${SPARK_JARS_DIR}" -name "iceberg-*.jar" -exec basename {} \;
