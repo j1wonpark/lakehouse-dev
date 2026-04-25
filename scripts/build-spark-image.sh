@@ -26,10 +26,9 @@ for arg in "$@"; do
   esac
 done
 
-echo "==> Spark home:       ${SPARK_HOME}"
-echo "==> Image:            ${FULL_IMAGE}"
-echo "==> Cluster:          ${KIND_CLUSTER}"
-echo "==> Iceberg version:  ${ICEBERG_VERSION}"
+echo "==> Spark home: ${SPARK_HOME}"
+echo "==> Image:      ${FULL_IMAGE}"
+echo "==> Cluster:    ${KIND_CLUSTER}"
 
 # --- Step 1: Build Spark distribution ----------------------------------------
 if [ "$SKIP_BUILD" = false ]; then
