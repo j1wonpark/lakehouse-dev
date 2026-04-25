@@ -2,15 +2,10 @@
 # Spark Connect + Iceberg + Polaris on kind (podman)
 # ===========================================================================
 
-SPARK_HOME       := $(HOME)/Workspace/spark
-ICEBERG_HOME     := $(HOME)/Workspace/iceberg
-DEV_JARS_DIR     := $(HOME)/Workspace/dev-jars
-SPARK_IMAGE      ?= localhost/spark-dev
-SPARK_TAG        ?= latest
-KIND_CLUSTER     ?= kind-cluster
-MINIO_NAMESPACE  ?= minio
-POLARIS_NAMESPACE?= polaris
-SPARK_NAMESPACE  ?= spark
+REPO_ROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+
+-include $(REPO_ROOT).env.local
+include $(REPO_ROOT).env.default
 
 export SPARK_HOME ICEBERG_HOME DEV_JARS_DIR SPARK_IMAGE SPARK_TAG KIND_CLUSTER
 export KIND_EXPERIMENTAL_PROVIDER=podman
