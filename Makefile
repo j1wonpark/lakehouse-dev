@@ -86,6 +86,7 @@ deploy-ingress: ## Deploy ingress-nginx + MinIO/Spark-Connect ingress resources
 	kubectl wait --namespace ingress-nginx --for=condition=ready pod \
 		--selector=app.kubernetes.io/component=controller --timeout=120s
 	kubectl apply -f manifests/ingress-minio.yaml
+	kubectl apply -f manifests/ingress-polaris.yaml
 	kubectl apply -f manifests/ingress-spark-connect-tcp.yaml
 	kubectl apply -f manifests/ingress-spark-ui.yaml 2>/dev/null || true
 
@@ -203,34 +204,8 @@ spark-connect-logs: ## Tail Spark Connect driver logs
 # ---------------------------------------------------------------------------
 
 .PHONY: init-catalog
-init-catalog: ## Initialize Polaris catalog (port-forward + create catalog)
-	@echo "==> Port-forwarding Polaris (API: 8181, Mgmt: 8182)..."
-	@kubectl port-forward -n $(POLARIS_NAMESPACE) svc/polaris 8181:8181 &
-	@kubectl port-forward -n $(POLARIS_NAMESPACE) svc/polaris-mgmt 8182:8182 &
-	@sleep 2; \
-	POLARIS_HOST=http://localhost:8181 POLARIS_MGMT=http://localhost:8182 ./scripts/init-polaris-catalog.sh; \
-	kill %1 %2 2>/dev/null || true
-
-# ---------------------------------------------------------------------------
-# Port-forward helpers
-# ---------------------------------------------------------------------------
-
-.PHONY: port-forward-minio
-port-forward-minio: ## Port-forward MinIO (API: 9000, Console: 9001)
-	@echo "MinIO API:     http://localhost:9000"
-	@echo "MinIO Console: http://localhost:9001  (minioadmin/minioadmin)"
-	kubectl port-forward -n $(MINIO_NAMESPACE) svc/minio 9000:9000 &
-	kubectl port-forward -n $(MINIO_NAMESPACE) svc/minio-console 9001:9001
-
-.PHONY: port-forward-polaris
-port-forward-polaris: ## Port-forward Polaris API (8181)
-	@echo "Polaris API: http://localhost:8181"
-	kubectl port-forward -n $(POLARIS_NAMESPACE) svc/polaris 8181:8181
-
-.PHONY: port-forward-spark-connect
-port-forward-spark-connect: ## Port-forward Spark Connect (15002)
-	@echo "Spark Connect: sc://localhost:15002"
-	kubectl port-forward -n $(SPARK_NAMESPACE) svc/spark-connect-server-svc 15002:15002
+init-catalog: ## Initialize Polaris catalog via Ingress
+	POLARIS_HOST=http://polaris.localhost POLARIS_MGMT=http://polaris-mgmt.localhost ./scripts/init-polaris-catalog.sh
 
 # ---------------------------------------------------------------------------
 # Status / debug
