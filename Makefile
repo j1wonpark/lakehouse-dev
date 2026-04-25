@@ -24,7 +24,7 @@ help: ## Show this help
 all: cluster infra dev-build-iceberg spark-image spark-connect init-catalog ## Setup everything end-to-end
 
 .PHONY: infra
-infra: deploy-minio deploy-polaris deploy-spark-operator deploy-ingress ## Deploy all infrastructure (MinIO + Polaris + Spark Operator + Ingress)
+infra: deploy-ingress deploy-minio deploy-polaris deploy-spark-operator ## Deploy all infrastructure (Ingress + MinIO + Polaris + Spark Operator)
 
 # ---------------------------------------------------------------------------
 # Cluster
@@ -57,7 +57,7 @@ dev-build-iceberg: ## Build Iceberg Spark runtime jar and copy to dev-jars
 	./scripts/build-iceberg.sh
 
 # ---------------------------------------------------------------------------
-# Spark image build (legacy full build)
+# Spark image build
 # ---------------------------------------------------------------------------
 
 .PHONY: spark-image
@@ -77,12 +77,20 @@ deploy-ingress: ## Deploy ingress-nginx + MinIO/Spark-Connect ingress resources
 	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
 	kubectl wait --namespace ingress-nginx --for=condition=ready pod \
 		--selector=app.kubernetes.io/component=controller --timeout=120s
-	kubectl patch deployment ingress-nginx-controller -n ingress-nginx \
-		--type=json \
-		-p='[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--tcp-services-configmap=ingress-nginx/tcp-services"}]'
-	kubectl patch service ingress-nginx-controller -n ingress-nginx \
-		--type=json \
-		-p='[{"op":"add","path":"/spec/ports/-","value":{"name":"spark-connect","port":15002,"targetPort":15002,"protocol":"TCP"}}]'
+	@if ! kubectl get deployment ingress-nginx-controller -n ingress-nginx -o jsonpath='{.spec.template.spec.containers[0].args}' \
+			| grep -q "tcp-services-configmap"; then \
+		echo "==> Patching ingress-nginx: enable TCP services configmap..."; \
+		kubectl patch deployment ingress-nginx-controller -n ingress-nginx \
+			--type=json \
+			-p='[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--tcp-services-configmap=ingress-nginx/tcp-services"}]'; \
+	fi
+	@if ! kubectl get service ingress-nginx-controller -n ingress-nginx -o jsonpath='{.spec.ports[*].name}' \
+			| grep -q "spark-connect"; then \
+		echo "==> Patching ingress-nginx: add Spark Connect port 15002..."; \
+		kubectl patch service ingress-nginx-controller -n ingress-nginx \
+			--type=json \
+			-p='[{"op":"add","path":"/spec/ports/-","value":{"name":"spark-connect","port":15002,"targetPort":15002,"protocol":"TCP"}}]'; \
+	fi
 	kubectl wait --namespace ingress-nginx --for=condition=ready pod \
 		--selector=app.kubernetes.io/component=controller --timeout=120s
 	kubectl apply -f manifests/ingress-spark-connect-tcp.yaml
