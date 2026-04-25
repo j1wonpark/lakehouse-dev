@@ -10,8 +10,8 @@ spec:
     spark.scheduler.mode: "FAIR"
 
     # --- Kubernetes ---
-    spark.kubernetes.container.image: "apache/spark:4.1.1-scala2.13-java17-python3-ubuntu"
-    spark.kubernetes.container.image.pullPolicy: "IfNotPresent"
+    spark.kubernetes.container.image: "localhost/spark-dev:latest"
+    spark.kubernetes.container.image.pullPolicy: "Never"
     spark.kubernetes.authenticate.driver.serviceAccountName: "spark"
     spark.kubernetes.executor.podNamePrefix: "spark-connect"
 

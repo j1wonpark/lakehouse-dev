@@ -32,6 +32,7 @@ infra: deploy-minio deploy-polaris deploy-spark-operator deploy-ingress ## Deplo
 
 .PHONY: cluster
 cluster: ## Create kind cluster (skip if exists)
+	@envsubst < kind-config.yaml.tmpl > kind-config.yaml
 	@if ! kind get clusters 2>&1 | grep -q "$(KIND_CLUSTER)"; then \
 		echo "==> Creating kind cluster '$(KIND_CLUSTER)'..."; \
 		kind create cluster --name $(KIND_CLUSTER) --config kind-config.yaml; \
