@@ -57,7 +57,7 @@ cp .env.default .env.local
 | 컴포넌트 | 버전 |
 |----------|------|
 | Spark | branch-4.1 (4.1.2-SNAPSHOT) |
-| Iceberg | apache-iceberg-1.10.1 |
+| Iceberg | main |
 | Scala | 2.13 |
 | Java | 17 |
 
