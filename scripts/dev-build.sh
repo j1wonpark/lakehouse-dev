@@ -15,8 +15,8 @@ set -euo pipefail
 #   ./scripts/dev-build.sh --no-restart               # build only, skip pod restart
 # ---------------------------------------------------------------------------
 
-SPARK_HOME="${SPARK_HOME:-$HOME/Workspace/spark}"
-SPARK_JARS_DIR="${SPARK_HOME}/assembly/target/scala-2.13/jars"
+SPARK_HOME="${SPARK_HOME:-$HOME/Workspace/data-platform/spark}"
+SPARK_JARS_DIR="${SPARK_HOME}/dist/jars"
 SPARK_NAMESPACE="${SPARK_NAMESPACE:-spark}"
 MODULE="${MODULE:-sql/connect/server}"
 RESTART=true

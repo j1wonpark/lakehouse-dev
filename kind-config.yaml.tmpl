@@ -13,5 +13,5 @@ nodes:
         hostPort: 15002
         protocol: TCP
     extraMounts:
-      - hostPath: ${SPARK_HOME}/assembly/target/scala-2.13/jars
+      - hostPath: ${SPARK_HOME}/dist/jars
         containerPath: /opt/spark/jars

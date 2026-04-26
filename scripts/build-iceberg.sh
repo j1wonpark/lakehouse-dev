@@ -9,8 +9,8 @@ set -euo pipefail
 # ---------------------------------------------------------------------------
 
 ICEBERG_HOME="${ICEBERG_HOME:-$HOME/Workspace/iceberg}"
-SPARK_HOME="${SPARK_HOME:-$HOME/Workspace/spark}"
-SPARK_JARS_DIR="${SPARK_HOME}/assembly/target/scala-2.13/jars"
+SPARK_HOME="${SPARK_HOME:-$HOME/Workspace/data-platform/spark}"
+SPARK_JARS_DIR="${SPARK_HOME}/dist/jars"
 SPARK_COMPAT="${SPARK_COMPAT:-4.1}"
 SCALA_VERSION="${SCALA_VERSION:-2.13}"
 

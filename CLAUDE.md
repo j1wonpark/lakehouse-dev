@@ -96,7 +96,7 @@ lakehouse-dev/
 | 15002 | Spark Connect gRPC (TCP passthrough) |
 
 호스트 경로 마운트:
-- `$SPARK_HOME/assembly/target/scala-2.13/jars` → `/opt/spark/jars` (컨테이너 내부)
+- `$SPARK_HOME/dist/jars` → `/opt/spark/jars` (컨테이너 내부)
 
 `kind-config.yaml`은 gitignore되어 있으며, `make cluster` 시 `envsubst < kind-config.yaml.tmpl`으로 생성된다.
 
@@ -150,7 +150,7 @@ make dev-build-iceberg
 
 - `$ICEBERG_HOME`에서 Gradle 빌드 실행
 - 빌드 대상: `iceberg-spark-runtime-4.1_2.13`, `iceberg-aws-bundle`
-- 출력: `$SPARK_HOME/assembly/target/scala-2.13/jars/`에 JAR 복사
+- 출력: `$SPARK_HOME/dist/jars/`에 JAR 복사 (Spark 배포본 빌드 후 실행)
 
 ### 2단계: Spark 이미지 빌드
 
@@ -158,10 +158,12 @@ make dev-build-iceberg
 make spark-image
 ```
 
-- Maven 빌드 (`-Pkubernetes -Phadoop-cloud` 프로파일)
-- Iceberg JAR 존재 확인 (없으면 에러)
-- Podman으로 컨테이너 이미지 빌드 (`docker-image-tool.sh`)
+- `dev/make-distribution.sh`로 공식 배포본 빌드 (`-Pkubernetes -Phadoop-cloud`)
+- `dist/` 디렉토리 생성 (jars, Dockerfiles, bin, sbin 등 포함)
+- `dist/jars/`에 Iceberg JAR 복사 (없으면 에러)
+- `podman build`로 컨테이너 이미지 빌드
 - Kind 클러스터에 로드: `localhost/spark-dev:latest`
+- `connector/protobuf` 모듈 제외: protoc-jar-maven-plugin과 protobuf-java 4.33.0 버전 불일치로 test compile 실패. Spark Connect + Iceberg 사용에 불필요한 모듈.
 
 ### 3단계: 증분 빌드 (핫리로드)
 
